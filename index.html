@@ -40,7 +40,16 @@
 <script>
 const order = ['India','USA','Africa','Other'];
 async function boot() {
-  const DATA = await fetch('data.json', {cache:'no-store'}).then(r => r.json());
+  const urls = [
+    'parts/meta.json',
+    'parts/usa_a_0.json','parts/usa_a_1.json','parts/usa_a_2.json',
+    'parts/usa_b_0.json','parts/usa_b_1.json','parts/usa_b_2.json',
+  ];
+  const [meta, ...usaParts] = await Promise.all(urls.map(u => fetch(u, {cache:'no-store'}).then(r => r.json())));
+  const DATA = {
+    ...meta,
+    regions: { ...meta.regions, USA: usaParts.flat() },
+  };
   window.DATA = DATA;
   const t = DATA.totals || {};
   document.getElementById('cards').innerHTML = [
@@ -73,7 +82,7 @@ function show(geo) {
     <th>Name</th><th>Company</th><th>Email</th><th>Sent</th><th>Subject</th><th>Status</th>
   </tr></thead><tbody>${body}</tbody></table>`;
 }
-boot().catch(e => { document.getElementById('table').innerHTML = '<div class="empty">Failed to load data.json</div>'; console.error(e); });
+boot().catch(e => { document.getElementById('table').innerHTML = '<div class="empty">Failed to load data</div>'; console.error(e); });
 </script>
 </body>
 </html>
