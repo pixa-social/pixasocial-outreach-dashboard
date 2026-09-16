@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PixaSocial Outreach Dashboard</title>
+<style>
+  :root { --bg:#0f1115; --card:#1a1d24; --muted:#9aa3b2; --text:#eef1f6; --accent:#7A2BE2; --line:#2a2f3a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:28px 24px 12px; border-bottom:1px solid var(--line); }
+  h1 { margin:0 0 6px; font-size:24px; }
+  .sub { color:var(--muted); font-size:14px; }
+  .wrap { max-width:1100px; margin:0 auto; padding:20px 24px 60px; }
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0 28px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .card .n { font-size:28px; font-weight:700; }
+  .card .l { font-size:11px; letter-spacing:.08em; color:var(--muted); margin-top:4px; }
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .tab { background:#12151b; border:1px solid var(--line); color:var(--text); padding:8px 14px; border-radius:999px; cursor:pointer; font-size:13px; }
+  .tab.active { background:var(--accent); border-color:var(--accent); }
+  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:13px; vertical-align:top; }
+  th { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; background:#151821; }
+  a { color:#b794f6; text-decoration:none; }
+  .empty { color:var(--muted); padding:24px; }
+  @media (max-width:800px){ .cards{ grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>PixaSocial Outreach Dashboard</h1>
+  <div class="sub">Justin · Partnerships · Updated <span id="updated"></span></div>
+</header>
+<div class="cards" id="cards"></div>
+<div class="tabs" id="tabs"></div>
+<div id="table"></div>
+</div>
+<script>
+const order = ['India','USA','Africa','Other'];
+async function boot() {
+  const DATA = await fetch('data.json', {cache:'no-store'}).then(r => r.json());
+  window.DATA = DATA;
+  const t = DATA.totals || {};
+  document.getElementById('cards').innerHTML = [
+    ['TOTAL', DATA.total_unique || 0],
+    ['INDIA', t.India || 0],
+    ['USA', t.USA || 0],
+    ['AFRICA', t.Africa || 0],
+  ].map(([l,n]) => `<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  document.getElementById('updated').textContent = DATA.updated_at || '';
+  const geos = [...order.filter(g => (DATA.regions||{})[g]), ...Object.keys(DATA.regions||{}).filter(g => !order.includes(g))];
+  document.getElementById('tabs').innerHTML = geos.map(g =>
+    `<button class="tab" data-geo="${g}" onclick="show('${g}')">${g} (${(DATA.totals&&DATA.totals[g])||0})</button>`
+  ).join('');
+  show(geos[0] || 'India');
+}
+function show(geo) {
+  [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.geo===geo));
+  const rows = (DATA.regions && DATA.regions[geo]) || [];
+  if (!rows.length) {
+    document.getElementById('table').innerHTML = `<div class="empty">No rows for ${geo} yet.</div>`;
+    return;
+  }
+  const body = rows.slice().reverse().map(r => `<tr>
+    <td>${r.name||''}</td><td>${r.company||''}</td>
+    <td><a href="mailto:${r.email}">${r.email}</a></td>
+    <td>${(r.sent_at||'').replace('T',' ').replace('Z',' UTC')}</td>
+    <td>${r.subject||''}</td><td>${r.status||''}</td>
+  </tr>`).join('');
+  document.getElementById('table').innerHTML = `<table><thead><tr>
+    <th>Name</th><th>Company</th><th>Email</th><th>Sent</th><th>Subject</th><th>Status</th>
+  </tr></thead><tbody>${body}</tbody></table>`;
+}
+boot().catch(e => { document.getElementById('table').innerHTML = '<div class="empty">Failed to load data.json</div>'; console.error(e); });
+</script>
+</body>
+</html>
