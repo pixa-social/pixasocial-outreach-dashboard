@@ -39,12 +39,13 @@
 </div>
 <script>
 const order = ['India','USA','Africa','Other'];
+const CDN = 'https://cdn.jsdelivr.net/gh/pixa-social/pixasocial-outreach-dashboard@main/';
 async function boot() {
   const urls = [
     'parts/meta.json',
     'parts/usa_a_0.json','parts/usa_a_1.json','parts/usa_a_2.json',
     'parts/usa_b_0.json','parts/usa_b_1.json','parts/usa_b_2.json',
-  ];
+  ].map(u => CDN + u);
   const [meta, ...usaParts] = await Promise.all(urls.map(u => fetch(u, {cache:'no-store'}).then(r => r.json())));
   const DATA = {
     ...meta,
