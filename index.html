@@ -24,6 +24,15 @@
   th { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; background:#151821; }
   a { color:#b794f6; text-decoration:none; }
   .empty { color:var(--muted); padding:24px; }
+  .lede { color:var(--muted); font-size:13px; margin:0 0 6px; }
+  .asof { color:var(--muted); font-size:12px; margin:0 0 12px; }
+  .count-strip { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:14px; margin:0 0 18px; }
+  .count-strip b { font-size:18px; }
+  .count-strip .sep { color:var(--muted); margin:0 8px; }
+  .section-h { margin:20px 0 8px; font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .section-h.small { margin-top:28px; font-size:11px; }
+  table.compact th, table.compact td { font-size:12px; padding:7px 10px; }
+  td a { word-break:break-all; }
   @media (max-width:800px){ .cards{ grid-template-columns:1fr 1fr; } }
 </style>
 </head>
@@ -48,8 +57,8 @@ async function boot() {
     USA = (await Promise.all(urls.map(u => fetch(u, {cache:'no-store'}).then(r => r.json())))).flat();
   }
   const DATA = { ...meta, regions: { ...meta.regions, USA } };
-
   window.DATA = DATA;
+  window.LEDGER = await fetch(CDN + 'parts/mention_ledger.json', {cache:'no-store'}).then(r => { if (!r.ok) throw new Error('cdn'); return r.json(); }).catch(() => fetch('parts/mention_ledger.json', {cache:'no-store'}).then(r => r.ok ? r.json() : null).catch(() => null));
   const t = DATA.totals || {};
   document.getElementById('cards').innerHTML = [
     ['TOTAL', DATA.total_unique || 0],
@@ -62,10 +71,32 @@ async function boot() {
   const geos = [...order.filter(g => (DATA.regions||{})[g]), ...Object.keys(DATA.regions||{}).filter(g => !order.includes(g))];
   document.getElementById('tabs').innerHTML = geos.map(g =>
     `<button class="tab" data-geo="${g}" onclick="show('${g}')">${g} (${(DATA.totals&&DATA.totals[g])||0})</button>`
-  ).join('');
+  ).join('') + `<button class="tab" data-geo="Mention Ledger" onclick="showLedger()">Mention Ledger</button>`;
   show(geos[0] || 'India');
 }
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function safeUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const u = url.trim();
+  if (!/^https:\/\/\S+$/i.test(u)) return '';
+  return u;
+}
+function linkCell(url, label) {
+  const u = safeUrl(url);
+  if (!u) return '\u2014';
+  const text = label || u;
+  return `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
+}
+function nextCell(value) {
+  const u = safeUrl(value);
+  if (u) return linkCell(u);
+  return esc(value || '\u2014');
+}
 function show(geo) {
+  if (geo === 'Mention Ledger') return showLedger();
   [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.geo===geo));
   const rows = (DATA.regions && DATA.regions[geo]) || [];
   if (!rows.length) {
@@ -73,14 +104,50 @@ function show(geo) {
     return;
   }
   const body = rows.slice().reverse().map(r => `<tr>
-    <td>${r.name||''}</td><td>${r.company||''}</td>
-    <td><a href="mailto:${r.email}">${r.email}</a></td>
-    <td>${(r.sent_at||'').replace('T',' ').replace('Z',' UTC')}</td>
-    <td>${r.subject||''}</td><td>${r.status||''}</td>
+    <td>${esc(r.name||'')}</td><td>${esc(r.company||'')}</td>
+    <td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td>
+    <td>${esc((r.sent_at||'').replace('T',' ').replace('Z',' UTC'))}</td>
+    <td>${esc(r.subject||'')}</td><td>${esc(r.status||'')}</td>
   </tr>`).join('');
   document.getElementById('table').innerHTML = `<table><thead><tr>
     <th>Name</th><th>Company</th><th>Email</th><th>Sent</th><th>Subject</th><th>Status</th>
   </tr></thead><tbody>${body}</tbody></table>`;
+}
+function showLedger() {
+  [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.geo==='Mention Ledger'));
+  const L = window.LEDGER;
+  if (!L) {
+    document.getElementById('table').innerHTML = `<div class="empty">Mention ledger not loaded.</div>`;
+    return;
+  }
+  const live = L.live || [];
+  const waiting = L.waiting || [];
+  const blocked = L.blocked || [];
+  const parked = L.parked || [];
+  const liveRows = live.map(r => `<tr>
+    <td>${esc(r.channel)}</td><td>${esc(r.type)}</td><td>${esc(r.status)}</td><td>${linkCell(r.url)}</td>
+  </tr>`).join('');
+  const waitRows = waiting.map(r => `<tr>
+    <td>${esc(r.channel)}</td><td>${esc(r.type)}</td><td>${esc(r.status)}</td><td>${nextCell(r.next)}</td>
+  </tr>`).join('');
+  const blockedRows = blocked.map(r => `<tr>
+    <td>${esc(r.channel)}</td><td>${esc(r.why)}</td><td>${esc(r.unblock)}</td>
+  </tr>`).join('');
+  const parkedRows = parked.map(r => `<tr>
+    <td>${esc(r.channel)}</td><td>${esc(r.note)}</td>
+  </tr>`).join('');
+  document.getElementById('table').innerHTML = `
+    <p class="lede">${esc(L.note || 'SEO / directory coverage. Not customer outreach.')}</p>
+    <p class="asof">As of ${esc(L.as_of || '18 Sep 2026 IST')}</p>
+    <div class="count-strip">Live <b>${live.length}</b><span class="sep">|</span>Waiting <b>${waiting.length}</b></div>
+    <h2 class="section-h">Live</h2>
+    <table><thead><tr><th>Channel</th><th>Type</th><th>Status</th><th>Live link</th></tr></thead><tbody>${liveRows}</tbody></table>
+    <h2 class="section-h">Waiting</h2>
+    <table><thead><tr><th>Channel</th><th>Type</th><th>Status</th><th>Next</th></tr></thead><tbody>${waitRows}</tbody></table>
+    <h2 class="section-h small">Blocked</h2>
+    <table class="compact"><thead><tr><th>Channel</th><th>Why</th><th>Unblock</th></tr></thead><tbody>${blockedRows}</tbody></table>
+    <h2 class="section-h small">Parked</h2>
+    <table class="compact"><thead><tr><th>Channel</th><th>Note</th></tr></thead><tbody>${parkedRows}</tbody></table>`;
 }
 boot().catch(e => { document.getElementById('table').innerHTML = '<div class="empty">Failed to load data</div>'; console.error(e); });
 </script>
