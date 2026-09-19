@@ -1,8 +1,10 @@
-/* boot: concat 4 text parts then eval */
+/* boot: load UI parts from GitHub (Vercel deploy lag workaround) */
 (async () => {
+  const base =
+    'https://raw.githubusercontent.com/pixa-social/pixasocial-outreach-dashboard/main/';
   const parts = await Promise.all(
     [0, 1, 2, 3].map((i) =>
-      fetch('dashboard.p' + i + '.js.txt', { cache: 'no-store' }).then((r) => {
+      fetch(base + 'dashboard.p' + i + '.js.txt', { cache: 'no-store' }).then((r) => {
         if (!r.ok) throw new Error('part ' + i + ' ' + r.status);
         return r.text();
       })
