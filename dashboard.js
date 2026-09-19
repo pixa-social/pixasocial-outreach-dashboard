@@ -17,11 +17,25 @@ async function loadFromBase(base) {
 try {
 return await fetchJson(base + 'data/outreach.json');
 } catch (_) {}
+try {
+  const meta = await fetchJson(base + 'data/outreach-meta.json');
+  const parts = [];
+  for (let i = 0; i < 20; i++) {
+    try { parts.push(await fetchJson(base + 'data/outreach.part' + i + '.json')); }
+    catch (_) { break; }
+  }
+  if (parts.length) {
+    return { ...meta, rows: parts.flatMap(p => p.rows || []) };
+  }
+} catch (_) {}
 // Fallback: assemble from shards (same schema)
 const meta = await fetchJson(base + 'data/outreach-meta.json');
 async function loadTabRows(tab) {
-// single file first
-try { return (await fetchJson(base + 'data/outreach-' + tab + '.json')).rows || []; } catch (_) {}
+// single file first (must be real JSON with rows array)
+try {
+  const one = await fetchJson(base + 'data/outreach-' + tab + '.json');
+  if (Array.isArray(one.rows) && one.rows.length) return one.rows;
+} catch (_) {}
 // numbered chunks 0..N
 const rows = [];
 for (let i = 0; i < 20; i++) {
