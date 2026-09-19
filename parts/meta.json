@@ -65,10 +65,13 @@
     "owner_justin": "amber left border — Justin"
   },
   "chunk_files": [
-    "slim_0.json",
-    "slim_1.json",
-    "slim_2.json",
-    "slim_3.json"
+    "r00.json",
+    "r01.json",
+    "r02.json",
+    "r03.json",
+    "r04.json",
+    "r05.json",
+    "r06.json"
   ],
   "slim": true
 }
