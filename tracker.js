@@ -1,6 +1,6 @@
 
 const CDN='https://cdn.jsdelivr.net/gh/pixa-social/pixasocial-outreach-dashboard@main/';
-const BUST='?v=0919e';
+const BUST='?v=0919f';
 const TAB_ORDER=['all','justin-customer','maya-agency','maya-affiliate','maya-distribution','maya-africa','maya-latam','maya-institutional','other'];
 let DATA=null,activeTrack='all';
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -19,7 +19,18 @@ async function boot(){
     else throw new Error('no local');
   }catch(e){
     const meta=await fetch(CDN+'parts/meta.json'+BUST,{cache:'no-store'}).then(r=>r.json());
-    const chunks=await Promise.all((meta.chunk_files||[]).map(f=>fetch(CDN+'parts/'+f+BUST,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(f+' '+r.status);return r.json();})));
+    const chunks=await Promise.all((meta.chunk_files||[]).map(async f=>{
+      const r=await fetch(CDN+'parts/'+f+BUST,{cache:'no-store'});
+      if(!r.ok)throw new Error(f+' '+r.status);
+      if(meta.encoding==='gzip-b64'||f.endsWith('.gz.b64')){
+        const b64=await r.text();
+        const bin=Uint8Array.from(atob(b64.trim()),c=>c.charCodeAt(0));
+        const ds=new DecompressionStream('gzip');
+        const stream=new Blob([bin]).stream().pipeThrough(ds);
+        return await new Response(stream).json();
+      }
+      return r.json();
+    }));
     let acts=chunks.flat();
     if(meta.slim) acts=expandSlim(meta,acts);
     DATA={...meta,schema:'activities-v1',activities:acts};
