@@ -31,20 +31,78 @@ try {
 // Fallback: assemble from shards (same schema)
 const meta = await fetchJson(base + 'data/outreach-meta.json');
 async function loadTabRows(tab) {
-// single file first (must be real JSON with rows array)
+// single file first (must be real JSON with non-empty rows)
 try {
   const one = await fetchJson(base + 'data/outreach-' + tab + '.json');
   if (Array.isArray(one.rows) && one.rows.length) return one.rows;
 } catch (_) {}
-// numbered chunks 0..N
+// numbered chunks 0..N (sparse-safe)
 const rows = [];
+let gotChunk = false;
 for (let i = 0; i < 20; i++) {
-try {
-const part = await fetchJson(base + 'data/outreach-' + tab + '-' + i + '.json');
-rows.push(...(part.rows || []));
-} catch (_) { if (i === 0) throw _; break; }
+  try {
+    const part = await fetchJson(base + 'data/outreach-' + tab + '-' + i + '.json');
+    rows.push(...(part.rows || []));
+    gotChunk = true;
+  } catch (_) { if (gotChunk) break; }
 }
+if (gotChunk) return rows;
+// Legacy fallbacks already on the repo
+if (tab === 'justin-customer') return loadJustinFromParts(base);
+if (tab === 'seo-links') return loadSeoFromLedger(base);
 return rows;
+}
+async function loadJustinFromParts(base) {
+  const meta = await fetchJson(base + 'parts/meta.json');
+  let USA = (meta.regions && meta.regions.USA) || [];
+  if (!USA.length) {
+    const urls = ['usa_a_0','usa_a_1','usa_a_2','usa_b_0','usa_b_1','usa_b_2'].map(u => base + 'parts/' + u + '.json');
+    USA = (await Promise.all(urls.map(u => fetchJson(u)))).flat();
+  }
+  const regions = { ...(meta.regions || {}), USA };
+  const out = [];
+  for (const [geo, items] of Object.entries(regions)) {
+    for (const o of (items || [])) {
+      out.push({
+        date_ist: o.sent_at || '',
+        agent: 'Justin',
+        campaign: 'justin-customer-' + String(geo).toLowerCase(),
+        tab: 'justin-customer',
+        name: o.name || '',
+        email: o.email || '',
+        region: geo,
+        subject: o.subject || '',
+        status: (o.status || 'sent').toLowerCase(),
+        notes: o.company || '',
+      });
+    }
+  }
+  return out;
+}
+async function loadSeoFromLedger(base) {
+  try {
+    const L = await fetchJson(base + 'parts/mention_ledger.json');
+    const out = [];
+    const map = { live: 'won', waiting: 'sent', blocked: 'skipped', parked: 'skipped' };
+    for (const [bucket, status] of Object.entries(map)) {
+      for (const o of (L[bucket] || [])) {
+        out.push({
+          date_ist: L.as_of || '',
+          agent: 'SEO',
+          campaign: 'seo-links',
+          tab: 'seo-links',
+          name: o.channel || '',
+          email: '',
+          region: o.type || bucket,
+          subject: o.url || o.next || '',
+          status,
+          notes: bucket + ': ' + (o.note || o.why || o.unblock || o.next || o.type || ''),
+          website: o.url || '',
+        });
+      }
+    }
+    return out;
+  } catch (_) { return []; }
 }
 const tabFiles = [];
 for (const t of TABS_DATA) {
@@ -191,7 +249,6 @@ ${showReply ? '<th>Reply</th>' : ''}
 function showTab(id) {
 activeTab = id;
 [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.tab === id));
-// reset heavy filters when switching tabs so counts feel right
 renderTable();
 }
 async function boot() {
