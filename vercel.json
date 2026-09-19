@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/outreach.js": {
+      "includeFiles": "api/outreach-data.b64"
+    }
+  },
   "rewrites": [
     {
       "source": "/data/outreach.json",
