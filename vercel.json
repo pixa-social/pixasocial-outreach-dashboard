@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/outreach.js": {
-      "includeFiles": "api/outreach-data.b64"
+      "includeFiles": "api/d0.txt,api/d1.txt,api/d2.txt,api/d3.txt"
     }
   },
   "rewrites": [
