@@ -1,298 +1,73 @@
 {
-  "updated_at": "2026-09-18T03:36:38Z",
-  "totals": {
-    "India": 12,
-    "USA": 397,
-    "Africa": 23,
-    "Other": 0
+  "updated_at": "2026-09-19T15:54:53Z",
+  "summary": {
+    "total_activities": 721,
+    "outbound": 703,
+    "replies": 17,
+    "reply_rate_pct": 2.4,
+    "by_track": {
+      "justin-customer": 452,
+      "maya-affiliate": 63,
+      "maya-institutional": 20,
+      "maya-africa": 19,
+      "maya-latam": 30,
+      "maya-agency": 83,
+      "maya-distribution": 52,
+      "other": 2
+    },
+    "by_owner": {
+      "Justin": 453,
+      "Maya": 268
+    },
+    "by_status": {
+      "sent": 698,
+      "ooo": 2,
+      "auto-ack": 2,
+      "bounced": 4,
+      "replied": 15
+    },
+    "by_direction": {
+      "outbound": 703,
+      "reply": 17,
+      "inbound": 1
+    }
   },
-  "total_unique": 432,
-  "regions": {
-    "India": [
-      {
-        "name": "Logan",
-        "company": "Minicuddles",
-        "email": "logan@miniklub.in",
-        "sent_at": "",
-        "subject": "Minicuddles UK social (from your LinkedIn note)",
-        "status": "sent"
-      },
-      {
-        "name": "Nikesh Bardia",
-        "company": "Eighty Jewellers Limited",
-        "email": "nikesh@eightyjewels.in",
-        "sent_at": "2026-09-15T16:30:13Z",
-        "subject": "nikesh \u2014 eighty jewels on ig",
-        "status": "sent"
-      },
-      {
-        "name": "Ajit Jhunjhunwala",
-        "company": "La Opala RG Limited",
-        "email": "aj@laopala.in",
-        "sent_at": "2026-09-15T16:50:43Z",
-        "subject": "Ajit \u2014 La Opala on IG",
-        "status": "sent"
-      },
-      {
-        "name": "Philip Logan",
-        "company": "Royal Orchid Hotels Limited",
-        "email": "philip@royalorchidhotels.com",
-        "sent_at": "2026-09-15T16:50:49Z",
-        "subject": "Philip \u2014 Royal Orchid on IG",
-        "status": "sent"
-      },
-      {
-        "name": "Bimal Thakkar",
-        "company": "ADF Foods Limited",
-        "email": "bimal@adf-foods.com",
-        "sent_at": "2026-09-16T10:01:09Z",
-        "subject": "Ashoka on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Poonam Chahal",
-        "company": "Cantabil Retail India Limited",
-        "email": "poonam@cantabilinternational.com",
-        "sent_at": "2026-09-16T11:36:10Z",
-        "subject": "Cantabil on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Umakanta Barik",
-        "company": "Heritage Foods Limited",
-        "email": "umakanta@heritagefoods.in",
-        "sent_at": "2026-09-16T11:36:16Z",
-        "subject": "Heritage Foods on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Rittick Roy Burman",
-        "company": "KSR Footwear Limited",
-        "email": "rittick.royburman@ksrfootwear.com",
-        "sent_at": "2026-09-16T11:36:23Z",
-        "subject": "KSR Footwear \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Amish Shah",
-        "company": "Mafatlal Industries Limited",
-        "email": "amish.shah@mafatlals.com",
-        "sent_at": "2026-09-16T11:36:29Z",
-        "subject": "Mafatlal on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Shirish Suvagia",
-        "company": "NITCO Limited",
-        "email": "shirishsuvagia@nitco.in",
-        "sent_at": "2026-09-16T11:36:35Z",
-        "subject": "NITCO on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Rajesh Kumar Mohta",
-        "company": "Speciality Restaurants Limited",
-        "email": "rkm@speciality.co.in",
-        "sent_at": "2026-09-16T11:36:42Z",
-        "subject": "Mainland China on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      },
-      {
-        "name": "Paresh Bafna",
-        "company": "Ventive Hospitality Limited",
-        "email": "paresh@ventivehospitality.com",
-        "sent_at": "2026-09-16T11:36:48Z",
-        "subject": "Ventive Hospitality on Instagram \u2014 a note from PixaSocial",
-        "status": "sent"
-      }
-    ],
-    "Africa": [
-      {
-        "name": "team",
-        "company": "Lesotho Tourism Development Corporation",
-        "email": "info@ltdc.org.ls",
-        "sent_at": "",
-        "subject": "Re Bont\u0161e Lesotho, without a new film crew",
-        "status": "sent"
-      },
-      {
-        "name": "Tiisetso",
-        "company": "Lesotho National Development Corporation",
-        "email": "info@lndc.org.ls",
-        "sent_at": "",
-        "subject": "Belo and Tikoe, told to the right investors",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "the Government of Lesotho PR office",
-        "email": "pr.office@gov.ls",
-        "sent_at": "",
-        "subject": "National messaging that people actually share",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Eswatini Tourism Authority",
-        "email": "etafeedback@tourismauthority.org.sz",
-        "sent_at": "",
-        "subject": "King's Cup and Luju, in the feed",
-        "status": "bounced"
-      },
-      {
-        "name": "team",
-        "company": "Eswatini Investment Promotion Authority",
-        "email": "info@sipa.org.sz",
-        "sent_at": "",
-        "subject": "A small market that still feels investable",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Botswana Tourism Organisation",
-        "email": "marketing@botswanatourism.co.bw",
-        "sent_at": "",
-        "subject": "More than Africa's best kept secret",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Botswana Investment and Trade Centre",
-        "email": "enquiries@bitc.co.bw",
-        "sent_at": "",
-        "subject": "Brand Botswana that is not one press release",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Botswana Government Communications and Information Systems",
-        "email": "bgcis@gov.bw",
-        "sent_at": "",
-        "subject": "Briefing every ministry PRO from one place",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Namibia Tourism Board",
-        "email": "info@namibiatourism.com.na",
-        "sent_at": "",
-        "subject": "Endless Horizons that do not all sound the same",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Namibia Investment Promotion and Development Board",
-        "email": "info@nipdb.com",
-        "sent_at": "",
-        "subject": "Brand Namibia for visit, live, and invest",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Namibia's Ministry of Information and Communication Technology",
-        "email": "info@mict.gov.na",
-        "sent_at": "",
-        "subject": "One story for live, visit, and invest",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Malawi Department of Tourism",
-        "email": "info@visitmalawi.mw",
-        "sent_at": "",
-        "subject": "Warm Heart of Africa, for lake vs wildlife vs culture",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Malawi Investment and Trade Centre",
-        "email": "info@mitc.mw",
-        "sent_at": "",
-        "subject": "Malawi 2063, told to the right investors",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Gambia Tourism Board",
-        "email": "info@gtboard.gm",
-        "sent_at": "",
-        "subject": "Smiling Coast, year-round",
-        "status": "bounced"
-      },
-      {
-        "name": "team",
-        "company": "Gambia Investment and Export Promotion Agency",
-        "email": "info@giepa.gm",
-        "sent_at": "",
-        "subject": "Tourism and agribusiness, to different investor motives",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "the Ministry of Information of The Gambia",
-        "email": "info@moin.gov.gm",
-        "sent_at": "",
-        "subject": "Citizen messaging people will actually share",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "Mauritius Tourism Promotion Authority",
-        "email": "mtpa@intnet.mu",
-        "sent_at": "",
-        "subject": "Mauritius Now, not one brochure for every traveller",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "the Mauritius Tourism Authority",
-        "email": "tourism.authority@intnet.mu",
-        "sent_at": "",
-        "subject": "Visitor confidence, without mixing the audiences",
-        "status": "bounced"
-      },
-      {
-        "name": "team",
-        "company": "the Economic Development Board Mauritius hospitality desk",
-        "email": "hpd@edbmauritius.org",
-        "sent_at": "",
-        "subject": "Smart City and hotel investors who do not want the same post",
-        "status": "sent"
-      },
-      {
-        "name": "team",
-        "company": "the Mauritius Government Information Service",
-        "email": "gis@govmu.org",
-        "sent_at": "",
-        "subject": "Communiqu\u00e9s that work as posts",
-        "status": "sent"
-      },
-      {
-        "name": "Oskido",
-        "company": "Kalawa Jazmee Records",
-        "email": "reception@kalawa.co.za",
-        "sent_at": "",
-        "subject": "80M YouTube views, cut for Kalawa Reels",
-        "status": "sent"
-      },
-      {
-        "name": "Media",
-        "company": "Ambitiouz Entertainment",
-        "email": "media@ambitiouz.co.za",
-        "sent_at": "",
-        "subject": "Ambitiouz media clips for hip-hop tribes",
-        "status": "sent"
-      },
-      {
-        "name": "Info",
-        "company": "Gallo Music Africa",
-        "email": "info@gallo.co.za",
-        "sent_at": "",
-        "subject": "Africa\u2019s largest catalog, cut for Reels",
-        "status": "sent"
-      }
-    ],
-    "Other": [],
-    "USA": []
-  }
+  "tracks": [
+    "all",
+    "justin-customer",
+    "maya-agency",
+    "maya-affiliate",
+    "maya-distribution",
+    "maya-africa",
+    "maya-latam",
+    "maya-institutional",
+    "other"
+  ],
+  "tab_labels": {
+    "all": "All",
+    "justin-customer": "Justin Customer",
+    "maya-agency": "Maya Agency",
+    "maya-affiliate": "Maya Affiliates",
+    "maya-distribution": "Maya Distribution",
+    "maya-africa": "Africa",
+    "maya-latam": "LatAm",
+    "maya-institutional": "Institutional",
+    "other": "Other"
+  },
+  "color_legend": {
+    "replied": "green — human reply",
+    "sent": "blue — outbound sent",
+    "ooo": "gray — out of office",
+    "bounced": "red — bounce / blocked",
+    "blocked": "red — blocked",
+    "auto-ack": "gray — automated ack",
+    "owner_maya": "purple left border — Maya",
+    "owner_justin": "amber left border — Justin"
+  },
+  "chunk_files": [
+    "activities_00.json",
+    "activities_01.json",
+    "activities_02.json",
+    "activities_03.json"
+  ]
 }
