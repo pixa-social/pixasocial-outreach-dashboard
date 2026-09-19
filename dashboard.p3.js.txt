@@ -1,0 +1,69 @@
+        : '--';
+      return (
+        '<tr>' +
+        '<td>' + esc(r.date_ist || '--') + '</td>' +
+        '<td>' + esc(r.agent || '') + '</td>' +
+        '<td>' + esc(r.campaign || '') + '</td>' +
+        '<td>' + esc(r.name || '') + '</td>' +
+        '<td>' + (r.email ? '<a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '--') + '</td>' +
+        '<td>' + linkCell(rowWebsite(r)) + '</td>' +
+        '<td>' + esc(r.region || '--') + '</td>' +
+        '<td>' + esc(r.subject || '--') + '</td>' +
+        '<td>' + badge(r.status) + '</td>' +
+        '<td class="notes">' + esc(r.notes || '--') + '</td>' +
+        (showReply ? '<td>' + replyCell + '</td>' : '') +
+        '</tr>'
+      );
+    })
+    .join('');
+  document.getElementById('table').innerHTML =
+    '<div class="table-wrap"><table><thead><tr>' +
+    '<th>Date (IST)</th><th>Agent</th><th>Campaign</th><th>Name</th><th>Email</th>' +
+    '<th>Website</th><th>Region</th><th>Subject</th><th>Status</th><th>Notes</th>' +
+    (showReply ? '<th>Reply</th>' : '') +
+    '</tr></thead><tbody>' +
+    body +
+    '</tbody></table></div>';
+}
+
+function showTab(id) {
+  activeTab = id;
+  document.querySelectorAll('.tab').forEach((b) => {
+    b.classList.toggle('active', b.dataset.tab === id);
+  });
+  renderTable();
+}
+
+function bindFilters() {
+  ['f-status', 'f-agent', 'f-region', 'f-campaign', 'f-from', 'f-to', 'f-q', 'f-has-link'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', renderTable);
+    el.addEventListener('change', renderTable);
+  });
+}
+
+async function boot() {
+  document.getElementById('table').innerHTML = '<div class="empty">Loading outreach...</div>';
+  DATA = await loadData();
+  window.DATA = DATA;
+  document.getElementById('updated').textContent = DATA.updated_at_ist || '';
+  document.getElementById('f-status').value = '';
+  document.getElementById('f-agent').value = '';
+  document.getElementById('f-region').value = '';
+  document.getElementById('f-campaign').value = '';
+  document.getElementById('f-from').value = '';
+  document.getElementById('f-to').value = '';
+  document.getElementById('f-q').value = '';
+  document.getElementById('f-has-link').checked = false;
+  renderCards();
+  renderTabs();
+  bindFilters();
+  showTab('overview');
+}
+
+boot().catch((e) => {
+  document.getElementById('table').innerHTML =
+    '<div class="empty">Failed to load <code>data/outreach.json</code> (same-origin). Check deploy.</div>';
+  console.error(e);
+});
