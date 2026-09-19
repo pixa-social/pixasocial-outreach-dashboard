@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PixaSocial Outreach Tracker</title>
+<link rel="stylesheet" href="tracker.css"/>
+</head><body>
+<div class="wrap">
+<header><h1>PixaSocial Outreach Tracker</h1>
+<div class="sub">Justin + Maya · every send &amp; reply · Updated <span id="updated"></span> · <span id="count-label"></span></div>
+</header>
+<div class="cards" id="cards"></div>
+<div class="tabs" id="tabs"></div>
+<div class="filters">
+<input type="search" id="q" placeholder="Search email, company, subject, name…"/>
+<label>Status</label><select id="status"><option value="">All statuses</option><option value="sent">sent</option><option value="replied">replied</option><option value="ooo">ooo</option><option value="bounced">bounced</option><option value="blocked">blocked</option><option value="auto-ack">auto-ack</option></select>
+<label>Owner</label><select id="owner"><option value="">All owners</option><option value="Justin">Justin</option><option value="Maya">Maya</option></select>
+<label>From</label><input type="date" id="from"/><label>To</label><input type="date" id="to"/>
+<label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="hasLink"/> Has website / live link</label>
+</div>
+<div class="legend">
+<span><i class="dot" style="background:var(--green)"></i> replied</span>
+<span><i class="dot" style="background:var(--blue)"></i> sent</span>
+<span><i class="dot" style="background:var(--gray)"></i> ooo / auto-ack</span>
+<span><i class="dot" style="background:var(--red)"></i> bounced / blocked</span>
+<span><i class="dot" style="background:var(--amber)"></i> Justin (left bar)</span>
+<span><i class="dot" style="background:var(--purple)"></i> Maya (left bar)</span>
+</div>
+<div id="err" class="empty" style="display:none"></div>
+<div id="table"></div>
+</div>
+<script src="boot.js"></script>
+</body></html>

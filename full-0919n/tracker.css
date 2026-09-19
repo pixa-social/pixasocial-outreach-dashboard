@@ -1,0 +1,24 @@
+
+:root{--bg:#0f1115;--card:#1a1d24;--muted:#9aa3b2;--text:#eef1f6;--accent:#7A2BE2;--line:#2a2f3a;--green:#22c55e;--blue:#3b82f6;--gray:#6b7280;--red:#ef4444;--purple:#a855f7;--amber:#f59e0b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+header{padding:24px 24px 8px;border-bottom:1px solid var(--line)}h1{margin:0 0 6px;font-size:22px}.sub{color:var(--muted);font-size:13px}
+.wrap{max-width:1280px;margin:0 auto;padding:16px 24px 60px}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:16px 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}.card .n{font-size:24px;font-weight:700}.card .l{font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:4px;text-transform:uppercase}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{background:#12151b;border:1px solid var(--line);color:var(--text);padding:7px 12px;border-radius:999px;cursor:pointer;font-size:12px}.tab.active{background:var(--accent);border-color:var(--accent)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.filters input,.filters select{background:#12151b;border:1px solid var(--line);color:var(--text);padding:8px 10px;border-radius:8px;font-size:13px}
+.filters input[type=search]{min-width:220px;flex:1}.filters label{font-size:11px;color:var(--muted);margin-right:2px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--muted);margin-bottom:12px}
+.legend span{display:inline-flex;align-items:center;gap:5px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{width:100%;border-collapse:collapse;min-width:900px}th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
+th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;background:#151821;position:sticky;top:0}
+a{color:#b794f6;text-decoration:none}.empty{color:var(--muted);padding:24px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.st-replied{background:rgba(34,197,94,.18);color:var(--green)}.st-sent{background:rgba(59,130,246,.18);color:#93c5fd}
+.st-ooo,.st-auto-ack{background:rgba(107,114,128,.25);color:#d1d5db}.st-bounced,.st-blocked,.st-failed{background:rgba(239,68,68,.2);color:#fca5a5}
+tr.owner-maya td:first-child{box-shadow:inset 3px 0 0 var(--purple)}tr.owner-justin td:first-child{box-shadow:inset 3px 0 0 var(--amber)}
+tr.row-replied{background:rgba(34,197,94,.06)}.muted{color:var(--muted)}.notes{max-width:340px;color:var(--muted);font-size:11px}
+@media(max-width:900px){.cards{grid-template-columns:1fr 1fr 1fr}}
