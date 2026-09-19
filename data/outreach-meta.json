@@ -1,5 +1,5 @@
 {
-  "updated_at_ist": "2026-09-19 16:47:20 IST",
+  "updated_at_ist": "2026-09-19 22:30:00 IST",
   "schema_version": 1,
   "status_colors": {
     "sent": "#3b82f6",
@@ -19,26 +19,26 @@
     {"id": "replies", "label": "Replies"}
   ],
   "totals": {
-    "all": 721,
+    "all": 724,
     "by_tab": {
+      "seo-links": 80,
+      "replies": 9,
       "maya-agency": 151,
-      "replies": 7,
       "affiliates": 52,
-      "justin-customer": 432,
-      "seo-links": 79
+      "justin-customer": 432
     },
     "by_status": {
-      "sent": 659,
-      "meeting": 2,
-      "replied": 13,
+      "replied": 14,
+      "sent": 661,
+      "meeting": 3,
       "skipped": 15,
-      "won": 32
+      "won": 31
     },
     "by_agent": {
+      "SEO": 82,
       "Maya": 210,
-      "Justin": 432,
-      "SEO": 79
+      "Justin": 432
     }
   },
-  "notes": "Single-file data/outreach.json is source of truth."
+  "notes": "Prefer same-origin data/outreach.json; SEO enriched in data/outreach-seo-links.json."
 }
