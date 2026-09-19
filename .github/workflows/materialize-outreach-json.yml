@@ -1,0 +1,43 @@
+name: Materialize outreach.json
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/outreach.json.gz.b64'
+      - '.github/workflows/materialize-outreach-json.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode gz.b64 to outreach.json
+        run: |
+          python3 << 'PY'
+          import base64, gzip, pathlib, json
+          p = pathlib.Path('data/outreach.json.gz.b64')
+          b64 = p.read_text().strip()
+          raw = gzip.decompress(base64.b64decode(b64))
+          data = json.loads(raw)
+          out = pathlib.Path('data/outreach.json')
+          out.write_bytes(raw if raw.endswith(b'\n') else raw + b'\n')
+          seo = sum(1 for r in data.get('rows', []) if r.get('t') == 'seo-links')
+          print(f'rows={len(data.get("rows", []))} seo-links={seo} bytes={out.stat().st_size}')
+          assert len(data.get('rows', [])) == 722
+          assert seo == 80
+          PY
+      - name: Commit outreach.json
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/outreach.json
+          if git diff --staged --quiet; then
+            echo 'No changes'
+            exit 0
+          fi
+          git commit -m 'data: add outreach.json with SEO/Links rows (80) as source of truth'
+          git push
