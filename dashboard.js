@@ -13,7 +13,6 @@ if (!r.ok) throw new Error(url + ' ' + r.status);
 return r.json();
 }
 async function loadFromBase(base) {
-// Prefer single source-of-truth file
 try {
 return await fetchJson(base + 'data/outreach.json');
 } catch (_) {}
@@ -28,15 +27,12 @@ try {
     return { ...meta, rows: parts.flatMap(p => p.rows || []) };
   }
 } catch (_) {}
-// Fallback: assemble from shards (same schema)
 const meta = await fetchJson(base + 'data/outreach-meta.json');
 async function loadTabRows(tab) {
-// single file first (must be real JSON with non-empty rows)
 try {
   const one = await fetchJson(base + 'data/outreach-' + tab + '.json');
   if (Array.isArray(one.rows) && one.rows.length) return one.rows;
 } catch (_) {}
-// numbered chunks 0..N (sparse-safe)
 const rows = [];
 let gotChunk = false;
 for (let i = 0; i < 20; i++) {
@@ -47,35 +43,53 @@ for (let i = 0; i < 20; i++) {
   } catch (_) { if (gotChunk) break; }
 }
 if (gotChunk) return rows;
-// Legacy fallbacks already on the repo
 if (tab === 'justin-customer') return loadJustinFromParts(base);
 if (tab === 'seo-links') return loadSeoFromLedger(base);
 return rows;
 }
 async function loadJustinFromParts(base) {
-  const meta = await fetchJson(base + 'parts/meta.json');
-  let USA = (meta.regions && meta.regions.USA) || [];
-  if (!USA.length) {
-    const urls = ['usa_a_0','usa_a_1','usa_a_2','usa_b_0','usa_b_1','usa_b_2'].map(u => base + 'parts/' + u + '.json');
-    USA = (await Promise.all(urls.map(u => fetchJson(u)))).flat();
-  }
-  const regions = { ...(meta.regions || {}), USA };
   const out = [];
-  for (const [geo, items] of Object.entries(regions)) {
-    for (const o of (items || [])) {
+  const statusMap = { bounced: 'bounce', ooo: 'skipped', 'auto-ack': 'sent' };
+  try {
+    const urls = ['usa_a_0','usa_a_1','usa_a_2','usa_b_0','usa_b_1','usa_b_2'].map(u => base + 'parts/' + u + '.json');
+    const USA = (await Promise.all(urls.map(u => fetchJson(u).catch(() => [])))).flat();
+    for (const o of USA) {
       out.push({
         date_ist: o.sent_at || '',
         agent: 'Justin',
-        campaign: 'justin-customer-' + String(geo).toLowerCase(),
+        campaign: 'justin-customer-usa',
         tab: 'justin-customer',
         name: o.name || '',
         email: o.email || '',
-        region: geo,
+        region: 'USA',
         subject: o.subject || '',
-        status: (o.status || 'sent').toLowerCase(),
+        status: statusMap[(o.status || 'sent').toLowerCase()] || (o.status || 'sent').toLowerCase(),
         notes: o.company || '',
       });
     }
+  } catch (_) {}
+  for (let i = 0; i < 12; i++) {
+    const id = 'r' + String(i).padStart(2, '0');
+    try {
+      const chunk = await fetchJson(base + 'parts/' + id + '.json');
+      const items = Array.isArray(chunk) ? chunk : (chunk.rows || chunk.activities || []);
+      for (const o of items) {
+        if ((o.track || o.tab || '') !== 'justin-customer' && (o.owner || '') !== 'Justin') continue;
+        const st = statusMap[String(o.status || 'sent').toLowerCase()] || String(o.status || 'sent').toLowerCase();
+        out.push({
+          date_ist: o.date || o.date_ist || o.sent_at || '',
+          agent: o.owner || 'Justin',
+          campaign: o.batch || o.track || 'justin-customer',
+          tab: 'justin-customer',
+          name: o.name || '',
+          email: o.email || '',
+          region: o.geo || o.region || '',
+          subject: o.subject || '',
+          status: ['sent','replied','hot','meeting','won','skipped','bounce'].includes(st) ? st : 'sent',
+          notes: o.notes || o.company || '',
+        });
+      }
+    } catch (_) { if (i > 0) break; }
   }
   return out;
 }
@@ -146,7 +160,7 @@ if (values.includes(cur)) el.value = cur;
 }
 function rowsForTab(tab) {
 const all = DATA.rows || [];
-if (tab === 'overview') return all.filter(r => r.tab !== 'replies'); // overview shows outreach, replies has own tab
+if (tab === 'overview') return all.filter(r => r.tab !== 'replies');
 return all.filter(r => r.tab === tab);
 }
 function currentFilters() {
