@@ -1,13 +1,24 @@
-/* PixaSocial Outreach Dashboard — same-origin single-file loader (no shard waterfall) */
+/* PixaSocial Outreach Dashboard — same-origin single-file loader (no shard/CDN waterfall) */
 const DATA_URL = 'data/outreach.json';
 
 let DATA = null;
 let activeTab = 'overview';
 
+function expandRows(data) {
+  if (!data || Number(data.schema_version) !== 2 || !data.key_map) return data;
+  const km = data.key_map;
+  data.rows = (data.rows || []).map((r) => {
+    const o = {};
+    for (const [k, v] of Object.entries(r)) o[km[k] || k] = v;
+    return o;
+  });
+  return data;
+}
+
 async function loadData() {
   const r = await fetch(DATA_URL, { cache: 'no-store' });
   if (!r.ok) throw new Error(DATA_URL + ' ' + r.status);
-  return r.json();
+  return expandRows(await r.json());
 }
 
 function esc(s) {
@@ -30,9 +41,7 @@ function dateOnly(ist) {
 }
 
 function uniq(arr) {
-  return [...new Set(arr.filter(Boolean))].sort((a, b) =>
-    String(a).localeCompare(String(b))
-  );
+  return [...new Set(arr.filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
 }
 
 function fillSelect(id, values) {
@@ -103,17 +112,7 @@ function applyFilters(rows) {
     if (f.to && d && d > f.to) return false;
     if (f.hasLink && !hasLiveOrWebsite(r)) return false;
     if (f.q) {
-      const blob = [
-        r.name,
-        r.email,
-        r.subject,
-        r.notes,
-        r.campaign,
-        r.region,
-        r.reply_snippet,
-        r.website,
-        r.live_url,
-      ]
+      const blob = [r.name, r.email, r.subject, r.notes, r.campaign, r.region, r.reply_snippet, r.website]
         .join(' ')
         .toLowerCase();
       if (!blob.includes(f.q)) return false;
@@ -124,9 +123,7 @@ function applyFilters(rows) {
 
 function ensureTotals() {
   if (DATA.totals && DATA.totals.all) return;
-  const by_tab = {},
-    by_status = {},
-    by_agent = {};
+  const by_tab = {}, by_status = {}, by_agent = {};
   for (const r of DATA.rows || []) {
     if (r.tab) by_tab[r.tab] = (by_tab[r.tab] || 0) + 1;
     const st = String(r.status || 'sent').toLowerCase();
@@ -151,10 +148,7 @@ function renderCards() {
     ['BOUNCE', by.bounce || 0],
   ];
   document.getElementById('cards').innerHTML = items
-    .map(
-      ([l, n]) =>
-        '<div class="card"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>'
-    )
+    .map(([l, n]) => '<div class="card"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>')
     .join('');
 }
 
@@ -196,13 +190,7 @@ function renderTable() {
   syncFilterOptions(base);
   const rows = applyFilters(base);
   document.getElementById('meta').innerHTML =
-    'Showing <b>' +
-    rows.length +
-    '</b> of <b>' +
-    base.length +
-    '</b> in <b>' +
-    esc(activeTab) +
-    '</b>';
+    'Showing <b>' + rows.length + '</b> of <b>' + base.length + '</b> in <b>' + esc(activeTab) + '</b>';
   if (!rows.length) {
     document.getElementById('table').innerHTML =
       '<div class="empty">No rows match these filters. Clear filters to see data.</div>';
@@ -215,44 +203,20 @@ function renderTable() {
         ? '<div class="snippet">' +
           esc(r.reply_snippet) +
           '</div>' +
-          (r.reply_date_ist
-            ? '<div class="notes">' + esc(r.reply_date_ist) + '</div>'
-            : '')
+          (r.reply_date_ist ? '<div class="notes">' + esc(r.reply_date_ist) + '</div>' : '')
         : '—';
       return (
         '<tr>' +
-        '<td>' +
-        esc(r.date_ist || '—') +
-        '</td>' +
-        '<td>' +
-        esc(r.agent || '') +
-        '</td>' +
-        '<td>' +
-        esc(r.campaign || '') +
-        '</td>' +
-        '<td>' +
-        esc(r.name || '') +
-        '</td>' +
-        '<td>' +
-        (r.email
-          ? '<a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>'
-          : '—') +
-        '</td>' +
-        '<td>' +
-        linkCell(rowWebsite(r)) +
-        '</td>' +
-        '<td>' +
-        esc(r.region || '—') +
-        '</td>' +
-        '<td>' +
-        esc(r.subject || '—') +
-        '</td>' +
-        '<td>' +
-        badge(r.status) +
-        '</td>' +
-        '<td class="notes">' +
-        esc(r.notes || '—') +
-        '</td>' +
+        '<td>' + esc(r.date_ist || '—') + '</td>' +
+        '<td>' + esc(r.agent || '') + '</td>' +
+        '<td>' + esc(r.campaign || '') + '</td>' +
+        '<td>' + esc(r.name || '') + '</td>' +
+        '<td>' + (r.email ? '<a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>' : '—') + '</td>' +
+        '<td>' + linkCell(rowWebsite(r)) + '</td>' +
+        '<td>' + esc(r.region || '—') + '</td>' +
+        '<td>' + esc(r.subject || '—') + '</td>' +
+        '<td>' + badge(r.status) + '</td>' +
+        '<td class="notes">' + esc(r.notes || '—') + '</td>' +
         (showReply ? '<td>' + replyCell + '</td>' : '') +
         '</tr>'
       );
@@ -277,16 +241,7 @@ function showTab(id) {
 }
 
 function bindFilters() {
-  [
-    'f-status',
-    'f-agent',
-    'f-region',
-    'f-campaign',
-    'f-from',
-    'f-to',
-    'f-q',
-    'f-has-link',
-  ].forEach((id) => {
+  ['f-status', 'f-agent', 'f-region', 'f-campaign', 'f-from', 'f-to', 'f-q', 'f-has-link'].forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', renderTable);
@@ -295,12 +250,10 @@ function bindFilters() {
 }
 
 async function boot() {
-  document.getElementById('table').innerHTML =
-    '<div class="empty">Loading outreach…</div>';
+  document.getElementById('table').innerHTML = '<div class="empty">Loading outreach…</div>';
   DATA = await loadData();
   window.DATA = DATA;
   document.getElementById('updated').textContent = DATA.updated_at_ist || '';
-  // Filters default empty → show all data immediately
   document.getElementById('f-status').value = '';
   document.getElementById('f-agent').value = '';
   document.getElementById('f-region').value = '';
