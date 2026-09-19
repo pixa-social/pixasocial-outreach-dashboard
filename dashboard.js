@@ -1,12 +1,14 @@
-/* boot: p0-p1 text, dp2/dp3 b64 */
+/* boot: concat 4 text parts then eval */
 (async () => {
-  const [t0, t1, b2, b3] = await Promise.all([
-    fetch('dashboard.p0.js.txt', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(r.status); return r.text(); }),
-    fetch('dashboard.p1.js.txt', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(r.status); return r.text(); }),
-    fetch('dp2.txt', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(r.status); return r.text(); }),
-    fetch('dp3.txt', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error(r.status); return r.text(); }),
-  ]);
-  (0, eval)([t0, t1, atob(b2.trim()), atob(b3.trim())].join(''));
+  const parts = await Promise.all(
+    [0, 1, 2, 3].map((i) =>
+      fetch('dashboard.p' + i + '.js.txt', { cache: 'no-store' }).then((r) => {
+        if (!r.ok) throw new Error('part ' + i + ' ' + r.status);
+        return r.text();
+      })
+    )
+  );
+  (0, eval)(parts.join(''));
 })().catch((e) => {
   const el = document.getElementById('table');
   if (el) el.innerHTML = '<div class="empty">Boot failed: ' + String(e) + '</div>';
