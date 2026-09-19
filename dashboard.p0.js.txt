@@ -1,0 +1,89 @@
+function expandRows(data) {
+  if (!data || Number(data.schema_version) !== 2 || !data.key_map) return data;
+  const km = data.key_map;
+  data.rows = (data.rows || []).map((r) => {
+    const o = {};
+    for (const [k, v] of Object.entries(r)) o[km[k] || k] = v;
+    return o;
+  });
+  return data;
+}
+
+/* PixaSocial Outreach Dashboard — same-origin single-file loader (no shard/CDN waterfall) */
+const DATA_URL = 'data/outreach.json';
+const DATA_GZ_B64_URL = 'data/outreach.json.gz.b64';
+
+let DATA = null;
+let activeTab = 'overview';
+
+async function fetchText(url) {
+  const r = await fetch(url, { cache: 'no-store' });
+  if (!r.ok) throw new Error(url + ' ' + r.status);
+  return r.text();
+}
+
+async function decodeGzipB64(b64) {
+  b64 = String(b64).replace(/\s+/g, '');
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  if (typeof DecompressionStream === 'undefined') throw new Error('no DecompressionStream');
+  const ds = new DecompressionStream('gzip');
+  const stream = new Blob([bytes]).stream().pipeThrough(ds);
+  const text = await new Response(stream).text();
+  return expandRows(JSON.parse(text));
+}
+
+async function loadData() {
+  try {
+    return await decodeGzipB64(await fetchText(DATA_GZ_B64_URL));
+  } catch (e) {
+    console.warn('gz.b64 failed', e);
+  }
+  try {
+    const r = await fetch(DATA_URL, { cache: 'no-store' });
+    if (!r.ok) throw new Error(DATA_URL + ' ' + r.status);
+    return expandRows(await r.json());
+  } catch (e) {
+    console.warn('outreach.json failed', e);
+  }
+  const parts = await Promise.all(
+    [0, 1, 2, 3].map((i) => fetchText('data/outreach.json.gz.b64.' + i))
+  );
+  return decodeGzipB64(parts.join(''));
+}
+
+
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function badge(status) {
+  const s = String(status || 'sent').toLowerCase();
+  return '<span class="badge ' + esc(s) + '">' + esc(s) + '</span>';
+}
+
+function dateOnly(ist) {
+  if (!ist) return '';
+  const m = String(ist).match(/(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1] : '';
+}
+
+function uniq(arr) {
+  return [...new Set(arr.filter(Boolean))].sort((a, b) =>
+    String(a).localeCompare(String(b))
+  );
+}
+
+function fillSelect(id, values) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const cur = el.value;
+  el.innerHTML =
+    '<option value="">All</option>' +
+    values.map((v) => '<option value="' + esc(v) + '">' + esc(v) + '</option>').join('');
