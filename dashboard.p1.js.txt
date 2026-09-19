@@ -1,0 +1,76 @@
+  if (values.includes(cur)) el.value = cur;
+}
+
+function rowWebsite(r) {
+  const w = String(r.website || r.live_url || r.live_link || '').trim();
+  if (w) return w;
+  const sub = String(r.subject || '').trim();
+  if (/^https?:\/\//i.test(sub)) return sub;
+  return '';
+}
+
+function hasLiveOrWebsite(r) {
+  return Boolean(rowWebsite(r));
+}
+
+function linkCell(url) {
+  if (!url) return '—';
+  let href = url;
+  if (!/^https?:\/\//i.test(href)) href = 'https://' + href;
+  let label = url.replace(/^https?:\/\//i, '').replace(/\/$/, '');
+  if (label.length > 36) label = label.slice(0, 34) + '…';
+  return (
+    '<a class="ext" href="' +
+    esc(href) +
+    '" target="_blank" rel="noopener noreferrer">' +
+    esc(label) +
+    '</a>'
+  );
+}
+
+function rowsForTab(tab) {
+  const all = DATA.rows || [];
+  if (tab === 'overview') return all.filter((r) => r.tab !== 'replies');
+  return all.filter((r) => r.tab === tab);
+}
+
+function currentFilters() {
+  return {
+    status: document.getElementById('f-status').value || '',
+    agent: document.getElementById('f-agent').value || '',
+    region: document.getElementById('f-region').value || '',
+    campaign: document.getElementById('f-campaign').value || '',
+    from: document.getElementById('f-from').value || '',
+    to: document.getElementById('f-to').value || '',
+    q: (document.getElementById('f-q').value || '').trim().toLowerCase(),
+    hasLink: document.getElementById('f-has-link').checked,
+  };
+}
+
+function applyFilters(rows) {
+  const f = currentFilters();
+  return rows.filter((r) => {
+    if (f.status && r.status !== f.status) return false;
+    if (f.agent && r.agent !== f.agent) return false;
+    if (f.region && r.region !== f.region) return false;
+    if (f.campaign && r.campaign !== f.campaign) return false;
+    const d = dateOnly(r.date_ist);
+    if (f.from && d && d < f.from) return false;
+    if (f.to && d && d > f.to) return false;
+    if (f.hasLink && !hasLiveOrWebsite(r)) return false;
+    if (f.q) {
+      const blob = [r.name, r.email, r.subject, r.notes, r.campaign, r.region, r.reply_snippet, r.website]
+        .join(' ')
+        .toLowerCase();
+      if (!blob.includes(f.q)) return false;
+    }
+    return true;
+  });
+}
+
+function ensureTotals() {
+  if (DATA.totals && DATA.totals.all) return;
+  const by_tab = {}, by_status = {}, by_agent = {};
+  for (const r of DATA.rows || []) {
+    if (r.tab) by_tab[r.tab] = (by_tab[r.tab] || 0) + 1;
+    const st = String(r.status || 'sent').toLowerCase();
