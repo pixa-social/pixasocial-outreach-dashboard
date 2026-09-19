@@ -1,1 +1,44 @@
-{"updated_at_ist":"2026-09-19 21:24:14 IST","schema_version":1,"status_colors":{"sent":"#3b82f6","replied":"#22c55e","hot":"#f97316","meeting":"#a855f7","won":"#eab308","skipped":"#6b7280","bounce":"#ef4444"},"tabs":[{"id":"overview","label":"Overview"},{"id":"maya-agency","label":"Maya Agency Track"},{"id":"affiliates","label":"Affiliates/Distributors"},{"id":"justin-customer","label":"Justin Customer"},{"id":"seo-links","label":"SEO/Links"},{"id":"replies","label":"Replies"}],"totals":{"all":721,"by_tab":{"maya-agency":151,"replies":7,"affiliates":52,"justin-customer":432,"seo-links":79},"by_status":{"sent":659,"meeting":2,"replied":13,"skipped":15,"won":32},"by_agent":{"Maya":210,"Justin":432,"SEO":79}}}
+{
+  "updated_at_ist": "2026-09-19 21:40:00 IST",
+  "schema_version": 1,
+  "status_colors": {
+    "sent": "#3b82f6",
+    "replied": "#22c55e",
+    "hot": "#f97316",
+    "meeting": "#a855f7",
+    "won": "#eab308",
+    "skipped": "#6b7280",
+    "bounce": "#ef4444"
+  },
+  "tabs": [
+    { "id": "overview", "label": "Overview" },
+    { "id": "maya-agency", "label": "Maya Agency Track" },
+    { "id": "affiliates", "label": "Affiliates/Distributors" },
+    { "id": "justin-customer", "label": "Justin Customer" },
+    { "id": "seo-links", "label": "SEO/Links" },
+    { "id": "replies", "label": "Replies" }
+  ],
+  "totals": {
+    "all": 721,
+    "by_tab": {
+      "maya-agency": 151,
+      "replies": 7,
+      "affiliates": 52,
+      "justin-customer": 432,
+      "seo-links": 79
+    },
+    "by_status": {
+      "sent": 659,
+      "meeting": 2,
+      "replied": 13,
+      "skipped": 15,
+      "won": 32
+    },
+    "by_agent": {
+      "Maya": 210,
+      "Justin": 432,
+      "SEO": 79
+    }
+  },
+  "notes": "Shards under data/outreach-<tab>-N.json; Justin/SEO fall back to parts/. Rebuild via scripts/rebuild_outreach_json.py for data/outreach.json"
+}
