@@ -3,8 +3,10 @@ const fs = require('fs');
 const path = require('path');
 module.exports = (req, res) => {
   try {
-    const b64 = fs.readFileSync(path.join(__dirname, 'outreach-data.b64'), 'utf8').trim();
-    const buf = zlib.gunzipSync(Buffer.from(b64, 'base64'));
+    const B64 = [0, 1, 2, 3].map((i) =>
+      fs.readFileSync(path.join(__dirname, 'd' + i + '.txt'), 'utf8')
+    ).join('');
+    const buf = zlib.gunzipSync(Buffer.from(B64, 'base64'));
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=60');
     res.statusCode = 200;
