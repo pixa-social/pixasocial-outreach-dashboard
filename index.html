@@ -41,5 +41,25 @@
 <div id="table"></div>
 </div>
 <script src="dashboard.js"></script>
+<script>
+/* Recompute status/tab cards from loaded rows (meta totals can be stale when using shards). */
+(function waitBoot(){
+  if (!window.DATA || !Array.isArray(DATA.rows) || !DATA.rows.length) {
+    return setTimeout(waitBoot, 200);
+  }
+  const by_tab = {}, by_status = {}, by_agent = {};
+  for (const r of DATA.rows) {
+    const tab = r.tab || '';
+    const st = String(r.status || 'sent').toLowerCase();
+    const ag = r.agent || '';
+    if (tab) by_tab[tab] = (by_tab[tab] || 0) + 1;
+    by_status[st] = (by_status[st] || 0) + 1;
+    if (ag) by_agent[ag] = (by_agent[ag] || 0) + 1;
+  }
+  DATA.totals = { all: DATA.rows.length, by_tab, by_status, by_agent };
+  if (typeof renderCards === 'function') renderCards();
+  if (typeof renderTabs === 'function') renderTabs();
+})();
+</script>
 </body>
 </html>
