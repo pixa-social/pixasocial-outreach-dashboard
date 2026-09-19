@@ -4,283 +4,42 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>PixaSocial Outreach Dashboard</title>
-<style>
-  :root { --bg:#0f1115; --card:#1a1d24; --muted:#9aa3b2; --text:#eef1f6; --accent:#7A2BE2; --line:#2a2f3a; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif; background:var(--bg); color:var(--text); }
-  header { padding:28px 24px 12px; border-bottom:1px solid var(--line); }
-  h1 { margin:0 0 6px; font-size:24px; }
-  .sub { color:var(--muted); font-size:14px; }
-  .wrap { max-width:1100px; margin:0 auto; padding:20px 24px 60px; }
-  .cards { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:18px 0 28px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
-  .card .n { font-size:28px; font-weight:700; }
-  .card .l { font-size:11px; letter-spacing:.08em; color:var(--muted); margin-top:4px; }
-  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
-  .tab { background:#12151b; border:1px solid var(--line); color:var(--text); padding:8px 14px; border-radius:999px; cursor:pointer; font-size:13px; }
-  .tab.active { background:var(--accent); border-color:var(--accent); }
-  table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); font-size:13px; vertical-align:top; }
-  th { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.06em; background:#151821; }
-  a { color:#b794f6; text-decoration:none; }
-  .empty { color:var(--muted); padding:24px; }
-  .lede { color:var(--muted); font-size:13px; margin:0 0 6px; }
-  .asof { color:var(--muted); font-size:12px; margin:0 0 12px; }
-  .count-strip { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:14px; margin:0 0 18px; }
-  .count-strip b { font-size:18px; }
-  .count-strip .sep { color:var(--muted); margin:0 8px; }
-  .count-strip .st-sent { color:#8ba3c7; }
-  .count-strip .st-replied { color:#6bcf8e; }
-  .count-strip .st-waiting { color:#e6b84d; }
-  .count-strip .st-closed { color:#8a9099; }
-  .count-strip .st-skipped { color:#d48787; }
-  .section-h { margin:20px 0 8px; font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
-  .section-h.small { margin-top:28px; font-size:11px; }
-  table.compact th, table.compact td { font-size:12px; padding:7px 10px; }
-  td a { word-break:break-all; }
-  .filters { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:0 0 14px; }
-  .filters label { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; }
-  .filters select { background:#12151b; border:1px solid var(--line); color:var(--text); padding:6px 10px; border-radius:8px; font-size:13px; }
-  .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
-  .badge-sent { background:#1e2a3a; color:#8ba3c7; border:1px solid #2a3a4e; }
-  .badge-replied { background:#1a3024; color:#6bcf8e; border:1px solid #2a4a38; }
-  .badge-waiting { background:#2e2818; color:#e6b84d; border:1px solid #4a4020; }
-  .badge-closed { background:#1e1e22; color:#8a9099; border:1px solid #2e3238; }
-  .badge-skipped_paid { background:#2a1a1a; color:#d48787; border:1px solid #4a2a2a; }
-  .reply-cell { font-size:12px; color:var(--muted); max-width:280px; }
-  .reply-cell strong { color:var(--text); font-weight:500; }
-  @media (max-width:800px){ .cards{ grid-template-columns:1fr 1fr; } }
-</style>
+<link rel="stylesheet" href="dashboard.css"/>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>PixaSocial Outreach Dashboard</h1>
-  <div class="sub">Justin · Partnerships · Updated <span id="updated"></span></div>
+<h1>PixaSocial Outreach Dashboard</h1>
+<div class="sub">Maya · Justin · SEO · Every outreach logged · Updated <span id="updated"></span></div>
 </header>
 <div class="cards" id="cards"></div>
 <div class="tabs" id="tabs"></div>
+<div class="filters" id="filters">
+<label>Status
+<select id="f-status"><option value="">All</option></select>
+</label>
+<label>Agent
+<select id="f-agent"><option value="">All</option></select>
+</label>
+<label>Region
+<select id="f-region"><option value="">All</option></select>
+</label>
+<label>Campaign
+<select id="f-campaign"><option value="">All</option></select>
+</label>
+<label>From date
+<input type="date" id="f-from"/>
+</label>
+<label>To date
+<input type="date" id="f-to"/>
+</label>
+<label class="search">Search name / email / subject / notes
+<input type="search" id="f-q" placeholder="Type to filter…"/>
+</label>
+</div>
+<div class="meta-bar" id="meta"></div>
 <div id="table"></div>
 </div>
-<script>
-const order = ['India','USA','Africa','Other'];
-const CDN = 'https://cdn.jsdelivr.net/gh/pixa-social/pixasocial-outreach-dashboard@main/';
-async function boot() {
-  const meta = await fetch(CDN + 'parts/meta.json', {cache:'no-store'}).then(r => r.json());
-  let USA = (meta.regions && meta.regions.USA) || [];
-  if (!USA.length) {
-    const urls = ['parts/usa_a_0.json','parts/usa_a_1.json','parts/usa_a_2.json','parts/usa_b_0.json','parts/usa_b_1.json','parts/usa_b_2.json'].map(u => CDN + u);
-    USA = (await Promise.all(urls.map(u => fetch(u, {cache:'no-store'}).then(r => r.json())))).flat();
-  }
-  const DATA = { ...meta, regions: { ...meta.regions, USA } };
-  window.DATA = DATA;
-  window.LEDGER = await fetch(CDN + 'parts/mention_ledger.json', {cache:'no-store'}).then(r => { if (!r.ok) throw new Error('cdn'); return r.json(); }).catch(() => fetch('parts/mention_ledger.json', {cache:'no-store'}).then(r => r.ok ? r.json() : null).catch(() => null));
-  window.SEO = await fetch(CDN + 'parts/seo_outreach.json', {cache:'no-store'}).then(r => { if (!r.ok) throw new Error('cdn'); return r.json(); }).catch(() => fetch('parts/seo_outreach.json', {cache:'no-store'}).then(r => r.ok ? r.json() : null).catch(() => null));
-  const t = DATA.totals || {};
-  document.getElementById('cards').innerHTML = [
-    ['TOTAL', DATA.total_unique || 0],
-    ['INDIA', t.India || 0],
-    ['USA', t.USA || 0],
-    ['AFRICA', t.Africa || 0],
-    ['OTHER', t.Other || 0],
-  ].map(([l,n]) => `<div class="card"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
-  document.getElementById('updated').textContent = DATA.updated_at || '';
-  const geos = [...order.filter(g => (DATA.regions||{})[g]), ...Object.keys(DATA.regions||{}).filter(g => !order.includes(g))];
-  const seoCount = (window.SEO && window.SEO.rows) ? window.SEO.rows.length : 0;
-  document.getElementById('tabs').innerHTML = geos.map(g =>
-    `<button class="tab" data-geo="${g}" onclick="show('${g}')">${g} (${(DATA.totals&&DATA.totals[g])||0})</button>`
-  ).join('') + `<button class="tab" data-geo="Mention Ledger" onclick="showLedger()">Mention Ledger</button>` +
-    `<button class="tab" data-geo="Link Desk" onclick="showLinkDesk()">Link Desk</button>`;
-  show(geos[0] || 'India');
-}
-function esc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function safeUrl(url) {
-  if (!url || typeof url !== 'string') return '';
-  const u = url.trim();
-  if (!/^https:\/\/\S+$/i.test(u)) return '';
-  return u;
-}
-function linkCell(url, label) {
-  const u = safeUrl(url);
-  if (!u) return '\u2014';
-  const text = label || u;
-  return `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
-}
-function nextCell(value) {
-  const u = safeUrl(value);
-  if (u) return linkCell(u);
-  return esc(value || '\u2014');
-}
-function statusBadge(status) {
-  const s = String(status || '').toLowerCase();
-  const cls = {
-    sent: 'badge-sent',
-    replied: 'badge-replied',
-    waiting: 'badge-waiting',
-    closed: 'badge-closed',
-    skipped_paid: 'badge-skipped_paid'
-  }[s] || 'badge-sent';
-  const label = s === 'skipped_paid' ? 'skipped paid' : s;
-  return `<span class="badge ${cls}">${esc(label)}</span>`;
-}
-function show(geo) {
-  if (geo === 'Mention Ledger') return showLedger();
-  if (geo === 'Link Desk') return showLinkDesk();
-  [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.geo===geo));
-  const rows = (DATA.regions && DATA.regions[geo]) || [];
-  if (!rows.length) {
-    document.getElementById('table').innerHTML = `<div class="empty">No rows for ${geo} yet.</div>`;
-    return;
-  }
-  const body = rows.slice().reverse().map(r => `<tr>
-    <td>${esc(r.name||'')}</td><td>${esc(r.company||'')}</td>
-    <td><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></td>
-    <td>${esc((r.sent_at||'').replace('T',' ').replace('Z',' UTC'))}</td>
-    <td>${esc(r.subject||'')}</td><td>${esc(r.status||'')}</td>
-  </tr>`).join('');
-  document.getElementById('table').innerHTML = `<table><thead><tr>
-    <th>Name</th><th>Company</th><th>Email</th><th>Sent</th><th>Subject</th><th>Status</th>
-  </tr></thead><tbody>${body}</tbody></table>`;
-}
-function showLedger() {
-  [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.geo==='Mention Ledger'));
-  const L = window.LEDGER;
-  if (!L) {
-    document.getElementById('table').innerHTML = `<div class="empty">Mention ledger not loaded.</div>`;
-    return;
-  }
-  const live = L.live || [];
-  const waiting = L.waiting || [];
-  const blocked = L.blocked || [];
-  const parked = L.parked || [];
-  const liveRows = live.map(r => `<tr>
-    <td>${esc(r.channel)}</td><td>${esc(r.type)}</td><td>${esc(r.status)}</td><td>${linkCell(r.url)}</td>
-  </tr>`).join('');
-  const waitRows = waiting.map(r => `<tr>
-    <td>${esc(r.channel)}</td><td>${esc(r.type)}</td><td>${esc(r.status)}</td><td>${nextCell(r.next)}</td>
-  </tr>`).join('');
-  const blockedRows = blocked.map(r => `<tr>
-    <td>${esc(r.channel)}</td><td>${esc(r.why)}</td><td>${esc(r.unblock)}</td>
-  </tr>`).join('');
-  const parkedRows = parked.map(r => `<tr>
-    <td>${esc(r.channel)}</td><td>${esc(r.note)}</td>
-  </tr>`).join('');
-  document.getElementById('table').innerHTML = `
-    <p class="lede">${esc(L.note || 'SEO / directory coverage. Not customer outreach.')}</p>
-    <p class="asof">As of ${esc(L.as_of || '18 Sep 2026 IST')}</p>
-    <div class="count-strip">Live <b>${live.length}</b><span class="sep">|</span>Waiting <b>${waiting.length}</b></div>
-    <h2 class="section-h">Live</h2>
-    <table><thead><tr><th>Channel</th><th>Type</th><th>Status</th><th>Live link</th></tr></thead><tbody>${liveRows}</tbody></table>
-    <h2 class="section-h">Waiting</h2>
-    <table><thead><tr><th>Channel</th><th>Type</th><th>Status</th><th>Next</th></tr></thead><tbody>${waitRows}</tbody></table>
-    <h2 class="section-h small">Blocked</h2>
-    <table class="compact"><thead><tr><th>Channel</th><th>Why</th><th>Unblock</th></tr></thead><tbody>${blockedRows}</tbody></table>
-    <h2 class="section-h small">Parked</h2>
-    <table class="compact"><thead><tr><th>Channel</th><th>Note</th></tr></thead><tbody>${parkedRows}</tbody></table>`;
-}
-function countByStatus(rows) {
-  const c = { sent:0, replied:0, waiting:0, closed:0, skipped_paid:0 };
-  (rows || []).forEach(r => { const s = String(r.status||'').toLowerCase(); if (c[s] != null) c[s]++; });
-  return c;
-}
-function filteredSeoRows() {
-  const S = window.SEO;
-  if (!S || !S.rows) return [];
-  const statusEl = document.getElementById('ld-status');
-  const typeEl = document.getElementById('ld-type');
-  const sortEl = document.getElementById('ld-sort');
-  const status = statusEl ? statusEl.value : 'all';
-  const type = typeEl ? typeEl.value : 'all';
-  const sort = sortEl ? sortEl.value : 'newest';
-  let rows = S.rows.slice();
-  if (status && status !== 'all') rows = rows.filter(r => String(r.status||'').toLowerCase() === status);
-  if (type && type !== 'all') rows = rows.filter(r => String(r.type||'') === type);
-  rows.sort((a, b) => {
-    const da = a.last_activity || a.date || '';
-    const db = b.last_activity || b.date || '';
-    return sort === 'oldest' ? da.localeCompare(db) : db.localeCompare(da);
-  });
-  return rows;
-}
-function renderLinkDeskTable() {
-  const rows = filteredSeoRows();
-  const body = rows.map(r => {
-    const replyBits = [];
-    if (r.reply_summary) replyBits.push(`<strong>Reply:</strong> ${esc(r.reply_summary)}`);
-    if (r.next) replyBits.push(`<strong>Next:</strong> ${esc(r.next)}`);
-    if (!replyBits.length && r.summary) replyBits.push(esc(r.summary));
-    return `<tr>
-      <td>${esc(r.date||'')}</td>
-      <td>${esc(r.last_activity||'')}</td>
-      <td>${r.url ? linkCell(r.url, r.channel) : esc(r.channel||'')}</td>
-      <td>${esc(r.type||'')}</td>
-      <td><a href="mailto:${esc(r.to||'')}">${esc(r.to||'')}</a></td>
-      <td>${esc(r.subject||'')}</td>
-      <td>${statusBadge(r.status)}</td>
-      <td class="reply-cell">${replyBits.join('<br>') || '\u2014'}</td>
-    </tr>`;
-  }).join('');
-  const tbody = document.getElementById('ld-tbody');
-  if (tbody) tbody.innerHTML = body || `<tr><td colspan="8" class="empty">No matching rows.</td></tr>`;
-}
-function showLinkDesk() {
-  [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('active', b.dataset.geo==='Link Desk'));
-  const S = window.SEO;
-  if (!S) {
-    document.getElementById('table').innerHTML = `<div class="empty">Link Desk data not loaded.</div>`;
-    return;
-  }
-  const all = S.rows || [];
-  const c = countByStatus(all);
-  const types = [...new Set(all.map(r => r.type).filter(Boolean))].sort();
-  const typeOpts = types.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  document.getElementById('table').innerHTML = `
-    <p class="lede">${esc(S.note || 'SEO / press / vendor email outreach. Replies logged. Not customer sales.')}</p>
-    <p class="asof">As of ${esc(S.as_of || '19 Sep 2026 IST')} · Future From: justin@</p>
-    <div class="count-strip">
-      Total <b>${all.length}</b><span class="sep">|</span>
-      <span class="st-sent">Sent <b>${c.sent}</b></span><span class="sep">|</span>
-      <span class="st-replied">Replied <b>${c.replied}</b></span><span class="sep">|</span>
-      <span class="st-waiting">Waiting <b>${c.waiting}</b></span><span class="sep">|</span>
-      <span class="st-closed">Closed <b>${c.closed}</b></span><span class="sep">|</span>
-      <span class="st-skipped">Skipped paid <b>${c.skipped_paid}</b></span>
-    </div>
-    <div class="filters">
-      <label>Status
-        <select id="ld-status" onchange="renderLinkDeskTable()">
-          <option value="all">All</option>
-          <option value="sent">Sent</option>
-          <option value="replied">Replied</option>
-          <option value="waiting">Waiting</option>
-          <option value="closed">Closed</option>
-          <option value="skipped_paid">Skipped paid</option>
-        </select>
-      </label>
-      <label>Type
-        <select id="ld-type" onchange="renderLinkDeskTable()">
-          <option value="all">All</option>
-          ${typeOpts}
-        </select>
-      </label>
-      <label>Sort
-        <select id="ld-sort" onchange="renderLinkDeskTable()">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-        </select>
-      </label>
-    </div>
-    <table>
-      <thead><tr>
-        <th>Date</th><th>Last activity</th><th>Channel</th><th>Type</th><th>To</th><th>Subject</th><th>Status</th><th>Reply / Next</th>
-      </tr></thead>
-      <tbody id="ld-tbody"></tbody>
-    </table>`;
-  renderLinkDeskTable();
-}
-boot().catch(e => { document.getElementById('table').innerHTML = '<div class="empty">Failed to load data</div>'; console.error(e); });
-</script>
+<script src="dashboard.js"></script>
 </body>
 </html>
