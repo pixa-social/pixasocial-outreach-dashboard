@@ -1,6 +1,6 @@
 
-const CDN='https://cdn.jsdelivr.net/gh/pixa-social/pixasocial-outreach-dashboard@main/';
-const BUST='?v=0919f';
+const CDN='https://cdn.jsdelivr.net/gh/pixa-social/pixasocial-outreach-dashboard@bc08b98bfd345b217c95fd32bed048ee05447a9f/';
+const BUST='?v=0919k2';
 const TAB_ORDER=['all','justin-customer','maya-agency','maya-affiliate','maya-distribution','maya-africa','maya-latam','maya-institutional','other'];
 let DATA=null,activeTrack='all';
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -22,6 +22,13 @@ async function boot(){
     const chunks=await Promise.all((meta.chunk_files||[]).map(async f=>{
       const r=await fetch(CDN+'parts/'+f+BUST,{cache:'no-store'});
       if(!r.ok)throw new Error(f+' '+r.status);
+      if(f.endsWith('.gz.hex')){
+        const hex=(await r.text()).trim();
+        const bin=new Uint8Array(hex.match(/.{1,2}/g).map(h=>parseInt(h,16)));
+        const ds=new DecompressionStream('gzip');
+        const stream=new Blob([bin]).stream().pipeThrough(ds);
+        return await new Response(stream).json();
+      }
       if(meta.encoding==='gzip-b64'||f.endsWith('.gz.b64')){
         const b64=await r.text();
         const bin=Uint8Array.from(atob(b64.trim()),c=>c.charCodeAt(0));
