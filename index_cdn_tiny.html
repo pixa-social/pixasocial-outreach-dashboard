@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PixaSocial Outreach Tracker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,sans-serif;background:#0f1115;color:#eef1f6}
+header{padding:24px;border-bottom:1px solid #2a2f3a}h1{margin:0 0 6px;font-size:22px}.sub{color:#9aa3b2;font-size:13px}
+.wrap{max-width:1280px;margin:0 auto;padding:16px 24px 60px}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:16px 0}
+.card{background:#1a1d24;border:1px solid #2a2f3a;border-radius:12px;padding:14px}.card .n{font-size:24px;font-weight:700}.card .l{font-size:10px;color:#9aa3b2;text-transform:uppercase;margin-top:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab{background:#12151b;border:1px solid #2a2f3a;color:#eef1f6;padding:7px 12px;border-radius:999px;cursor:pointer;font-size:12px}.tab.active{background:#7A2BE2;border-color:#7A2BE2}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}.filters input,.filters select{background:#12151b;border:1px solid #2a2f3a;color:#eef1f6;padding:8px 10px;border-radius:8px;font-size:13px}.filters input[type=search]{min-width:200px;flex:1}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#9aa3b2;margin-bottom:12px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:4px}
+.table-wrap{overflow:auto;border:1px solid #2a2f3a;border-radius:12px;background:#1a1d24}table{width:100%;border-collapse:collapse;min-width:900px}th,td{text-align:left;padding:9px 11px;border-bottom:1px solid #2a2f3a;font-size:12px;vertical-align:top}th{color:#9aa3b2;font-size:10px;text-transform:uppercase;background:#151821;position:sticky;top:0}a{color:#b794f6;text-decoration:none}.empty{color:#9aa3b2;padding:24px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;text-transform:uppercase}
+.st-replied{background:rgba(34,197,94,.18);color:#22c55e}.st-sent{background:rgba(59,130,246,.18);color:#93c5fd}.st-ooo,.st-auto-ack{background:rgba(107,114,128,.25);color:#d1d5db}.st-bounced,.st-blocked{background:rgba(239,68,68,.2);color:#fca5a5}
+tr.owner-maya td:first-child{box-shadow:inset 3px 0 0 #a855f7}tr.owner-justin td:first-child{box-shadow:inset 3px 0 0 #f59e0b}tr.row-replied{background:rgba(34,197,94,.06)}.muted{color:#9aa3b2}.notes{max-width:280px;color:#9aa3b2;font-size:11px}
+@media(max-width:900px){.cards{grid-template-columns:1fr 1fr 1fr}}
+</style></head><body><div class="wrap">
+<header><h1>PixaSocial Outreach Tracker</h1><div class="sub">Justin + Maya · every send &amp; reply · Updated <span id="updated"></span> · <span id="count-label"></span></div></header>
+<div class="cards" id="cards"></div><div class="tabs" id="tabs"></div>
+<div class="filters"><input type="search" id="q" placeholder="Search…"/><label>Status</label><select id="status"><option value="">All</option><option>sent</option><option>replied</option><option>ooo</option><option>bounced</option><option>blocked</option><option>auto-ack</option></select>
+<label>Owner</label><select id="owner"><option value="">All</option><option>Justin</option><option>Maya</option></select>
+<label>From</label><input type="date" id="from"/><label>To</label><input type="date" id="to"/></div>
+<div class="legend"><span><i class="dot" style="background:#22c55e"></i>replied</span> <span><i class="dot" style="background:#3b82f6"></i>sent</span> <span><i class="dot" style="background:#6b7280"></i>ooo</span> <span><i class="dot" style="background:#ef4444"></i>bounce</span> <span><i class="dot" style="background:#f59e0b"></i>Justin</span> <span><i class="dot" style="background:#a855f7"></i>Maya</span></div>
+<div id="table"></div></div>
+<script src="https://cdn.jsdelivr.net/gh/pixa-social/pixasocial-outreach-dashboard@7668b588118eb5ad4f276573c3533c16c2d2fa5f/tracker.js?v=0919k2"></script>
+</body></html>
