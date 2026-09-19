@@ -4,8 +4,9 @@ Static outreach dashboard for PixaSocial (Maya agency track, affiliates, Justin 
 
 ## Live data
 
-- **Source of truth:** [`data/outreach.json`](data/outreach.json)
-- **UI:** [`index.html`](index.html) loads that JSON (local path first, then jsDelivr / raw GitHub CDN).
+- **Source of truth:** [`data/outreach.json`](data/outreach.json) (full file) or shards under `data/outreach-*-N.json`
+- **UI:** [`index.html`](index.html) + [`dashboard.js`](dashboard.js) (local path first, then jsDelivr / raw GitHub CDN).
+- **Live:** https://ps-outreach-full-0916e.vercel.app
 
 ## Tabs
 
@@ -71,17 +72,17 @@ Append new rows to `data/outreach.json` → `rows` array. Keep `schema_version` 
 
 ## How Justin / SEO append rows
 
-1. Open `data/outreach.json`.
+1. Open `data/outreach.json` (or append to the matching `data/outreach-<tab>-N.json` shard).
 2. Add your object to the `rows` array (newest first is nice but UI sorts by `date_ist`).
 3. Set `tab` to `justin-customer` or `seo-links`.
-4. Update top-level `updated_at_ist` and recount `totals` if you maintain them by hand (or regenerate with the build script).
-5. Commit to `main` — Vercel / static host picks up the change.
+4. Update top-level `updated_at_ist` and recount `totals` if you maintain them by hand (or regenerate with `scripts/rebuild_outreach_json.py`).
+5. Commit to `main` — Vercel picks up the change.
 
-For SEO listings you can also keep editing `parts/mention_ledger.json` and regenerate `data/outreach.json`.
+For SEO listings you can also keep editing `parts/mention_ledger.json` (dashboard falls back to it).
 
 ## Legacy `parts/`
 
-`parts/meta.json`, USA shards, and `mention_ledger.json` remain for backward compatibility and rebuilds. The dashboard UI now reads **only** `data/outreach.json`.
+`parts/meta.json`, USA shards, and `mention_ledger.json` remain for backward compatibility and rebuilds. The dashboard prefers `data/outreach.json`, then assembles `data/outreach-meta.json` + `data/outreach-<tab>-N.json` shards, then falls back to legacy `parts/` (USA Justin shards + `mention_ledger.json`).
 
 ## Local preview
 
@@ -90,8 +91,9 @@ python3 -m http.server 8080
 # open http://localhost:8080/
 ```
 
-
 ## Data files
 
-- `data/outreach.json` — full source of truth (preferred)
-- Shards (fallback if the full file is unavailable): `data/outreach-meta.json` + `data/outreach-<tab>.json` (Justin may be split into `outreach-justin-customer-0.json` / `-1.json`)
+- `data/outreach.json` — full source of truth (preferred; rebuild locally under `/workspace/outreach-dash-build/`)
+- Shards (live on GitHub): `data/outreach-meta.json` + `data/outreach-maya-agency-0..5.json`, `outreach-affiliates-0..1.json`, `outreach-replies.json`
+- Justin fallback: `parts/usa_*.json` (+ Tracker `parts/rXX.json` when present)
+- SEO fallback: `parts/mention_ledger.json`
