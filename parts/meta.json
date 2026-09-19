@@ -65,9 +65,13 @@
     "owner_justin": "amber left border — Justin"
   },
   "chunk_files": [
-    "activities_00.json",
-    "activities_01.json",
-    "activities_02.json",
-    "activities_03.json"
+    "act_00.json",
+    "act_01.json",
+    "act_02.json",
+    "act_03.json",
+    "act_04.json",
+    "act_05.json",
+    "act_06.json",
+    "act_07.json"
   ]
 }
