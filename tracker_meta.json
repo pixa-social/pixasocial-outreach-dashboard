@@ -1,1 +1,16 @@
-{"parts": ["tracker_data.gz.b64.0", "tracker_data.gz.b64.1", "tracker_data.gz.b64.2", "tracker_data.gz.b64.3", "tracker_data.gz.b64.4", "tracker_data.gz.b64.5", "tracker_data.gz.b64.6", "tracker_data.gz.b64.7"], "updated_at": "2026-09-22T07:18:46Z", "activities": 1059}
+{
+  "parts": [
+    "tracker_data.gz.b64.0",
+    "tracker_data.gz.b64.1",
+    "tracker_data.gz.b64.2",
+    "tracker_data.gz.b64.3",
+    "tracker_data.gz.b64.4",
+    "tracker_data.gz.b64.5",
+    "tracker_data.gz.b64.6",
+    "tracker_data.gz.b64.7"
+  ],
+  "updated_at": "2026-09-23T07:18:25Z",
+  "activities": 1283,
+  "schema": "activities-v1",
+  "encoding": "gzip-b64"
+}
